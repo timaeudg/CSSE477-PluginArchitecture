@@ -11,6 +11,7 @@ import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
@@ -20,6 +21,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.swing.JFileChooser;
 
 import framework.IPlugin;
 import framework.Plugin;
@@ -31,11 +34,18 @@ import framework.Plugin;
  * @author harrissa
  * 
  */
-public class PluginLoader {
+public class PluginLoader implements Runnable {
+	
+	private Thread t;
+	private String threadName = "pluginLoader";
 
 	List<IPlugin> loadPlugins;
 	Path currentDir;
+	boolean stopped = false;
 
+	public PluginLoader() {
+		this(Paths.get("./DropJarsHere/"));
+	}
 	/**
 	 * If you for some reason already have a list of plugins, it instantiates
 	 * with that list.
@@ -46,6 +56,7 @@ public class PluginLoader {
 
 		this.currentDir = currentDir;
 		loadPlugins = plugins;
+		init();
 
 	};
 
@@ -54,8 +65,7 @@ public class PluginLoader {
 	 */
 	public PluginLoader(Path currentDir) {
 
-		this.currentDir = currentDir;
-		loadPlugins = new ArrayList<>();
+		this(currentDir, new ArrayList<IPlugin>());	
 
 	};
 
@@ -86,6 +96,7 @@ public class PluginLoader {
 					Constructor<IPlugin> constructor = c.getConstructor();
 					IPlugin i = constructor.newInstance();
 					this.loadPlugins.add(i);
+					i.startup();
 
 				} catch (ClassNotFoundException cnfe) {
 					System.err.println("Class not found");
@@ -113,13 +124,13 @@ public class PluginLoader {
 			}
 
 		} catch (IOException e) {
-			System.err.println("JarFile load Error");
+			System.err.println("Not a jarFile, no biggie. Moving on.");
 		}
 
 	}
 
 	/**
-	 * Watch dir moniters the current directory for any new files and calls
+	 * Watch dir monitors the current directory for any new files and calls
 	 * loadJar on them.
 	 */
 	public void watchDir() {
@@ -134,6 +145,9 @@ public class PluginLoader {
 		}
 
 		while (true) {
+			if(stopped){
+				break;
+			}
 			WatchKey key = null;
 			try {
 				key = watcher.take();
@@ -164,5 +178,48 @@ public class PluginLoader {
 		}
 
 	}
-
+	private void init() {
+		
+		File currDir = currentDir.toFile();
+		File[] listOfJars = currDir.listFiles();
+		
+		for(File jar : listOfJars) {
+			
+			loadJar(jar.toString());
+			
+		}
+		
+		start();
+		
+	}
+	
+	public void setDir(String dir) {
+		currentDir = Paths.get(dir);
+		reset();
+	}
+	public String getDir() {
+		
+		return currentDir.toString();
+	}
+	
+	public void run() {
+		watchDir();
+	}
+	public void start() {
+		if(t == null)
+		{
+			this.stopped = false;
+			t = new Thread(this, threadName);
+			t.start();
+			
+		}
+	}
+	public void reset() {
+		if(t!=null){
+			this.stopped=true;
+			t = null;
+			start();
+		}
+	}
+	
 }

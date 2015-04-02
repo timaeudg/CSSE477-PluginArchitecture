@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -17,8 +18,11 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 import javax.swing.JScrollBar;
 
+import main.PluginLoader;
+
 public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		ActionListener {
+	public PluginLoader pluginLoader;
 
 	private static final long serialVersionUID = -594503413910961630L;
 	private JPanel contentPane;
@@ -34,7 +38,9 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					FrameworkWindow frame = new FrameworkWindow();
+					PluginLoader p = new PluginLoader();
+					
+					FrameworkWindow frame = new FrameworkWindow(p);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -46,7 +52,8 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	/**
 	 * Create the frame.
 	 */
-	public FrameworkWindow() {
+	public FrameworkWindow(PluginLoader pluginLoader) {
+		this.pluginLoader = pluginLoader;
 		setTitle("Doge Plugin Framework");
 		setIconImage(Toolkit
 				.getDefaultToolkit()
@@ -76,13 +83,24 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		StatusArea.setBounds(0, 0, 774, 139);
 		StatusPanel.add(StatusArea);
 
+		JPanel DirectoryPanel = new JPanel();
+		DirectoryPanel.setBounds(5, 5, 185, 20);
+		contentPane.add(DirectoryPanel);
+		DirectoryPanel.setLayout(null);
+		
+		SwitchDirListener swl = new SwitchDirListener();
+		JButton DirButton = new JButton("Set New Directory");
+		DirButton.setBounds(0, 0, 180, 20);
+		DirectoryPanel.add(DirButton);
+		DirButton.addActionListener(swl);
+		
 		JPanel PluginPanel = new JPanel();
-		PluginPanel.setBounds(5, 5, 185, 395);
+		PluginPanel.setBounds(5, 25, 185, 375);
 		contentPane.add(PluginPanel);
 		PluginPanel.setLayout(null);
 
 		JButton LoadButton = new JButton("Load Plugin");
-		LoadButton.setBounds(0, 372, 185, 23);
+		LoadButton.setBounds(0, 352, 185, 23);
 		PluginPanel.add(LoadButton);
 		LoadButton.addActionListener(this);
 
@@ -129,4 +147,31 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	public void actionPerformed(ActionEvent e) {
 		//this.framework.loadPlugin(currentlySelectedPlugin);
 	}
+	
+	public void switchDir(String s) {
+		pluginLoader.setDir(s);
+	}
+	class SwitchDirListener extends JPanel implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+
+			JFileChooser chooser = new JFileChooser();
+			chooser.setCurrentDirectory(new java.io.File(pluginLoader.getDir()));
+			chooser.setDialogTitle("Choose a directory to load jars from.");
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			chooser.setAcceptAllFileFilterUsed(false);
+			if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+				switchDir(chooser.getSelectedFile().toString());
+				
+			}
+			
+		}
+		
+	}
 }
+	
+	
+	
+
