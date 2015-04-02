@@ -86,7 +86,7 @@ public class PluginLoader {
 					Constructor<IPlugin> constructor = c.getConstructor();
 					IPlugin i = constructor.newInstance();
 					this.loadPlugins.add(i);
-
+					
 				} catch (ClassNotFoundException cnfe) {
 					System.err.println("Class not found");
 					cnfe.printStackTrace();
@@ -118,10 +118,6 @@ public class PluginLoader {
 
 	}
 
-	/**
-	 * Watch dir moniters the current directory for any new files and calls
-	 * loadJar on them.
-	 */
 	public void watchDir() {
 
 		WatchService watcher = null;
