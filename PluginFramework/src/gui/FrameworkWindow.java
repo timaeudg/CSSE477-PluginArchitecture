@@ -127,6 +127,5 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		println("Nick");
 	}
 }
