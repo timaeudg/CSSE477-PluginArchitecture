@@ -197,7 +197,6 @@ public class PluginLoader implements Runnable {
 		currentDir = Paths.get(dir);
 		reset();
 	}
-	
 	public String getDir() {
 		
 		return currentDir.toString();
