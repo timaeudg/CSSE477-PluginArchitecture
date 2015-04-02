@@ -1,0 +1,17 @@
+package main;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class PluginPlatform {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+		PluginLoader p = new PluginLoader();
+		String current = new java.io.File( "." ).getCanonicalPath();
+		Path path = Paths.get(current + "/src/main/");
+		p.watchDir(path);
+	}
+
+}
