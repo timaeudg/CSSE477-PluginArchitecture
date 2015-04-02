@@ -127,5 +127,6 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//this.framework.loadPlugin(currentlySelectedPlugin);
 	}
 }
