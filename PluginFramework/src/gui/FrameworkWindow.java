@@ -41,6 +41,8 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					
+					// Sets the plugin loader for this GUI.
 					PluginLoader p = new PluginLoader();
 
 					FrameworkWindow frame = new FrameworkWindow(p);
@@ -53,7 +55,7 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	}
 
 	/**
-	 * Create the frame.
+	 * Create the frame (notice that it instantiates with a plugin loader).
 	 */
 	public FrameworkWindow(PluginLoader pluginLoader) {
 		this.pluginLoader = pluginLoader;
@@ -86,21 +88,28 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		StatusArea.setBounds(0, 0, 774, 139);
 		StatusPanel.add(StatusArea);
 
+		// Scott's stuff starts here
+		
+		// Scott's panel (feel free to move)
 		JPanel DirectoryPanel = new JPanel();
 		DirectoryPanel.setBounds(5, 5, 800, 20);
 		contentPane.add(DirectoryPanel);
 		DirectoryPanel.setLayout(null);
 
+		// Displays the current directory
 		DirectoryLabel = new JTextArea("Current Dir: " + pluginLoader.getDir());
 		DirectoryLabel.setBounds(0, 0, 615, 20);
 		DirectoryPanel.add(DirectoryLabel);
 
+		// Button to press and switch to a new directory
 		SwitchDirListener swl = new SwitchDirListener();
 		JButton DirButton = new JButton("Set New Directory");
 		DirButton.setBounds(620, 0, 150, 20);
 		DirectoryPanel.add(DirButton);
 		DirButton.addActionListener(swl);
-
+		
+		//End of Scott's Stuff
+		
 		JPanel PluginPanel = new JPanel();
 		PluginPanel.setBounds(5, 30, 185, 370);
 		contentPane.add(PluginPanel);
@@ -160,6 +169,12 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		DirectoryLabel.setText("Current Dir: " + s);
 	}
 
+	/**
+	 * If switch dir button is clicked, open a file chooser and choose a new dir
+	 * 
+	 * @author harrissa
+	 * 
+	 */
 	class SwitchDirListener extends JPanel implements ActionListener {
 
 		@Override

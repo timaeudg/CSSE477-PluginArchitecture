@@ -1,0 +1,33 @@
+import framework.IPlugin;
+
+
+public class ButtonPlugin implements IPlugin extends JPanel{
+
+	public ButtonPlugin () {
+		
+	}
+	@Override
+	public void saveExecutionPanelContents() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getExecutionPanelContents() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void startup() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void pause() {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

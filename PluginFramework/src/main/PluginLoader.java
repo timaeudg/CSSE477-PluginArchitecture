@@ -35,7 +35,7 @@ import framework.Plugin;
  * 
  */
 public class PluginLoader implements Runnable {
-	
+
 	private Thread t;
 	private String threadName = "pluginLoader";
 
@@ -43,29 +43,32 @@ public class PluginLoader implements Runnable {
 	Path currentDir;
 	boolean stopped = false;
 
+	/**
+	 * Defaults to DropJarsHere directory
+	 */
 	public PluginLoader() {
-		this(Paths.get("./DropJarsHere/"));
+		this(Paths.get("./DropJarsHere/").toString());
 	}
+
 	/**
 	 * If you for some reason already have a list of plugins, it instantiates
 	 * with that list.
 	 * 
 	 * @param plugins
 	 */
-	public PluginLoader(Path currentDir, List<IPlugin> plugins) {
-
-		this.currentDir = currentDir;
-		loadPlugins = plugins;
-		init();
+	public PluginLoader(String currentDir, List<IPlugin> plugins) {
+		loadPlugins = new ArrayList<>();
+		setDir(currentDir);
+		loadPlugins.addAll(plugins);
 
 	};
 
 	/**
 	 * This constructor instantiates the list of plugins.
 	 */
-	public PluginLoader(Path currentDir) {
+	public PluginLoader(String currentDir) {
 
-		this(currentDir, new ArrayList<IPlugin>());	
+		this(currentDir, new ArrayList<IPlugin>());
 
 	};
 
@@ -145,7 +148,7 @@ public class PluginLoader implements Runnable {
 		}
 
 		while (true) {
-			if(stopped){
+			if (stopped) {
 				break;
 			}
 			WatchKey key = null;
@@ -178,50 +181,62 @@ public class PluginLoader implements Runnable {
 		}
 
 	}
-	private void init() {
-		
+
+	/**
+	 * Clears the plugin list, loads the plugin jars from the new directory and
+	 * resets the watcher to use the new directory.
+	 * 
+	 * @param dir
+	 */
+	public void setDir(String dir) {
+		loadPlugins.clear();
+		currentDir = Paths.get(dir);
 		File currDir = currentDir.toFile();
 		File[] listOfJars = currDir.listFiles();
-		
-		for(File jar : listOfJars) {
-			
+
+		for (File jar : listOfJars) {
+
 			loadJar(jar.toString());
-			
+
 		}
-		
-		start();
-		
-	}
-	
-	public void setDir(String dir) {
-		currentDir = Paths.get(dir);
 		reset();
 	}
-	
+
+	/**
+	 * Returns the directory currently loaded/watched.
+	 * @return
+	 */
 	public String getDir() {
-		
+
 		return currentDir.toString();
 	}
-	
+
+	/**
+	 * For the threading.
+	 */
 	public void run() {
 		watchDir();
 	}
-	
+
+	/**
+	 * For the threading.
+	 */
 	public void start() {
-		if(t == null)
-		{
+		if (t == null) {
 			this.stopped = false;
 			t = new Thread(this, threadName);
 			t.start();
-			
+
 		}
 	}
+
+	/**
+	 * To reset the threading.
+	 */
 	public void reset() {
-		if(t!=null){
-			this.stopped=true;
-			t = null;
-			start();
-		}
+		this.stopped = true;
+		t = null;
+		start();
 	}
-	
+
 }
