@@ -1,20 +1,26 @@
 package framework;
 
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public abstract class Plugin implements IPlugin {
-	private JPanel executionPanel;
-	private JPanel statusPanel;
+	protected JPanel executionPanel;
+	protected JTextArea statusPanel;
+	
+	public Plugin() {
+		
+	}
+	
 	public JPanel getExecutionPanel() {
 		return executionPanel;
 	}
 	public void setExecutionPanel(JPanel executionPanel) {
 		this.executionPanel = executionPanel;
 	}
-	public JPanel getStatusPanel() {
+	public JTextArea getStatusPanel() {
 		return statusPanel;
 	}
-	public void setStatusPanel(JPanel statusPanel) {
+	public void setStatusPanel(JTextArea statusPanel) {
 		this.statusPanel = statusPanel;
 	}
 }

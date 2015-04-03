@@ -1,8 +1,10 @@
 package framework;
 
+import javax.swing.JPanel;
+
 public interface IPlugin {	
 	void saveExecutionPanelContents();
-	void getExecutionPanelContents();
+	JPanel getExecutionPanelContents();
 	void startup();
 	void pause();
 

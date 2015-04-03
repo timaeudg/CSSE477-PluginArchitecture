@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -34,25 +36,6 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	private JTextArea StatusArea;
 	private JTextArea DirectoryLabel;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					
-					// Sets the plugin loader for this GUI.
-					PluginLoader p = new PluginLoader();
-
-					FrameworkWindow frame = new FrameworkWindow(p);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame (notice that it instantiates with a plugin loader).
@@ -121,6 +104,7 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		LoadButton.addActionListener(this);
 
 		PluginList = new JList<String>();
+		this.populatePluginList(this.pluginLoader.getLoadPluginsNames());
 		PluginList.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null,
 				null, null));
 		PluginList.setVisibleRowCount(20);
@@ -145,8 +129,9 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	}
 
 	@Override
-	public void populatePluginList(String[] pluginList) {
-		this.PluginList.setListData(pluginList);
+	public void populatePluginList(List<String> pluginList) {
+		String[] dumb = pluginList.toArray(new String[pluginList.size()]);
+		this.PluginList.setListData(dumb);;
 	}
 
 	@Override

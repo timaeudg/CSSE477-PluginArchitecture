@@ -5,48 +5,47 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import framework.IPlugin;
+import framework.Plugin;
 
 
-public class ButtonPlugin extends JPanel implements IPlugin {
-
-	public JButton button;
-	public JTextArea jta;
+public class ButtonPlugin extends Plugin {
 	
 	public ButtonPlugin () {
-		
+		super();
 	}
 	
-	@Override
 	public void saveExecutionPanelContents() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void getExecutionPanelContents() {
-		// TODO Auto-generated method stub
+	public JPanel getExecutionPanelContents() {
+		return executionPanel;
 		
 	}
 
-	@Override
 	public void startup() {
-		ButtonPluginListener bpl = new ButtonPluginListener();
-		button = new JButton("yay?");
-		this.add(button);
+		JTextArea jta = new JTextArea("Press the button!");
+		ButtonPluginListener bpl = new ButtonPluginListener(jta);
+		JButton button = new JButton("yay?");
+		
 		button.addActionListener(bpl);
 		
-		jta = new JTextArea("Press the button!");
-		this.add(jta);
+		this.executionPanel.add(button);		
+		this.executionPanel.add(jta);
 	}
 
-	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
 		
 	}
 	
 	class ButtonPluginListener implements ActionListener {
+		private JTextArea jta;
+		
+		public ButtonPluginListener(JTextArea jta) {
+			this.jta = jta;
+		}
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {

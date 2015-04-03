@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardWatchEventKinds;
@@ -22,9 +19,8 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JFileChooser;
+import javax.swing.JButton;
 
-import framework.IPlugin;
 import framework.Plugin;
 
 /**
@@ -39,7 +35,20 @@ public class PluginLoader implements Runnable {
 	private Thread t;
 	private String threadName = "pluginLoader";
 
-	List<IPlugin> loadPlugins;
+	List<Plugin> loadPlugins;
+	
+	public List<Plugin> getLoadPlugins() {
+		return loadPlugins;
+	}
+	
+	public List<String> getLoadPluginsNames(){
+		List<String> names = new ArrayList<String>();
+		for(Plugin plug : this.loadPlugins) {
+			names.add(plug.getClass().getSimpleName());
+		}
+		return names;
+	}
+
 	Path currentDir;
 	boolean stopped = false;
 
@@ -56,7 +65,7 @@ public class PluginLoader implements Runnable {
 	 * 
 	 * @param plugins
 	 */
-	public PluginLoader(String currentDir, List<IPlugin> plugins) {
+	public PluginLoader(String currentDir, List<Plugin> plugins) {
 		loadPlugins = new ArrayList<>();
 		setDir(currentDir);
 		loadPlugins.addAll(plugins);
@@ -68,7 +77,7 @@ public class PluginLoader implements Runnable {
 	 */
 	public PluginLoader(String currentDir) {
 
-		this(currentDir, new ArrayList<IPlugin>());
+		this(currentDir, new ArrayList<Plugin>());
 
 	};
 
@@ -96,10 +105,13 @@ public class PluginLoader implements Runnable {
 							je.getName().length() - 6);
 					className = className.replace('/', '.');
 					Class c = cl.loadClass(className);
-					Constructor<IPlugin> constructor = c.getConstructor();
-					IPlugin i = constructor.newInstance();
-					this.loadPlugins.add(i);
-					i.startup();
+					if(Plugin.class.isAssignableFrom(c)) {
+						Constructor<Plugin> constructor = c.getConstructor();
+						Plugin i = constructor.newInstance();
+						this.loadPlugins.add(i);
+					} else {
+						continue;
+					}
 
 				} catch (ClassNotFoundException cnfe) {
 					System.err.println("Class not found");

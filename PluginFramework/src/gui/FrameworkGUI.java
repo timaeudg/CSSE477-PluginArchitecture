@@ -1,5 +1,7 @@
 package gui;
 
+import java.util.List;
+
 import javax.swing.JPanel;
 
 public interface FrameworkGUI {
@@ -31,7 +33,7 @@ public interface FrameworkGUI {
 	 * @param pluginList
 	 *            String array of plugin names
 	 */
-	public void populatePluginList(String[] pluginList);
+	public void populatePluginList(List<String> pluginList);
 
 	/**
 	 * Gets the Execution Panel
