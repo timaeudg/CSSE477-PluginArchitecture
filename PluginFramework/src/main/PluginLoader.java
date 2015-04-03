@@ -22,6 +22,8 @@ import java.util.jar.JarFile;
 import javax.swing.JButton;
 
 import framework.Plugin;
+import gui.FrameworkGUI;
+import gui.FrameworkWindow;
 
 /**
  * This class monitors a selected directory and loads any plugin JARs added to
@@ -48,6 +50,14 @@ public class PluginLoader implements Runnable {
 		}
 		return names;
 	}
+	
+	private FrameworkGUI GUI;
+	
+	
+
+	public void setGUI(FrameworkGUI gUI) {
+		GUI = gUI;
+	}
 
 	Path currentDir;
 	boolean stopped = false;
@@ -68,7 +78,6 @@ public class PluginLoader implements Runnable {
 	public PluginLoader(String currentDir, List<Plugin> plugins) {
 		loadPlugins = new ArrayList<>();
 		setDir(currentDir);
-		loadPlugins.addAll(plugins);
 
 	};
 
@@ -80,6 +89,10 @@ public class PluginLoader implements Runnable {
 		this(currentDir, new ArrayList<Plugin>());
 
 	};
+	
+	public void reload(){
+		this.setDir(this.currentDir.toString());
+	}
 
 	/**
 	 * Load jar is given a file path to the jar and it will extract the class
@@ -141,7 +154,7 @@ public class PluginLoader implements Runnable {
 		} catch (IOException e) {
 			System.err.println("Not a jarFile, no biggie. Moving on.");
 		}
-
+		this.GUI.populatePluginList(getLoadPluginsNames());
 	}
 
 	/**
@@ -205,11 +218,13 @@ public class PluginLoader implements Runnable {
 		currentDir = Paths.get(dir);
 		File currDir = currentDir.toFile();
 		File[] listOfJars = currDir.listFiles();
-
+		
+		if(this.GUI != null) {
 		for (File jar : listOfJars) {
 
 			loadJar(jar.toString());
 
+		}
 		}
 		reset();
 	}

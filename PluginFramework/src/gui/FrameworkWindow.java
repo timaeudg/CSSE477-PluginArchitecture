@@ -3,6 +3,8 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.ScrollPane;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,18 +17,40 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneLayout;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 import javax.swing.JScrollBar;
 
 import main.PluginLoader;
+import main.PluginRunner;
 
 public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		ActionListener {
 	public PluginLoader pluginLoader;
+	public PluginRunner pluginRunner;
+
+	public PluginLoader getPluginLoader() {
+		return pluginLoader;
+	}
+
+	public void setPluginLoader(PluginLoader pluginLoader) {
+		this.pluginLoader = pluginLoader;
+		this.DirectoryLabel.setText("Current Dir: " + pluginLoader.getDir());
+	}
+
+	public PluginRunner getPluginRunner() {
+		return pluginRunner;
+	}
+
+	public void setPluginRunner(PluginRunner pluginRunner) {
+		this.pluginRunner = pluginRunner;
+		
+	}
 
 	private static final long serialVersionUID = -594503413910961630L;
 	private JPanel contentPane;
@@ -40,8 +64,7 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 	/**
 	 * Create the frame (notice that it instantiates with a plugin loader).
 	 */
-	public FrameworkWindow(PluginLoader pluginLoader) {
-		this.pluginLoader = pluginLoader;
+	public FrameworkWindow() {
 		setTitle("Doge Plugin Framework");
 		setIconImage(Toolkit
 				.getDefaultToolkit()
@@ -64,12 +87,19 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		StatusPanel.setAlignmentY(Component.BOTTOM_ALIGNMENT);
 		contentPane.add(StatusPanel);
 		StatusPanel.setLayout(null);
+		
 
 		StatusArea = new JTextArea();
 		StatusArea.setLineWrap(true);
 		StatusArea.setEditable(false);
 		StatusArea.setBounds(0, 0, 774, 139);
-		StatusPanel.add(StatusArea);
+
+		JScrollPane scroll = new JScrollPane(StatusArea);
+		scroll.setLayout(new ScrollPaneLayout());
+		scroll.setBounds(0, 0, 774, 139);
+		
+		StatusPanel.add(scroll);
+		
 
 		// Scott's stuff starts here
 		
@@ -80,7 +110,7 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		DirectoryPanel.setLayout(null);
 
 		// Displays the current directory
-		DirectoryLabel = new JTextArea("Current Dir: " + pluginLoader.getDir());
+		DirectoryLabel = new JTextArea();
 		DirectoryLabel.setBounds(0, 0, 615, 20);
 		DirectoryPanel.add(DirectoryLabel);
 
@@ -104,7 +134,6 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 		LoadButton.addActionListener(this);
 
 		PluginList = new JList<String>();
-		this.populatePluginList(this.pluginLoader.getLoadPluginsNames());
 		PluginList.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null,
 				null, null));
 		PluginList.setVisibleRowCount(20);
@@ -146,7 +175,13 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// this.framework.loadPlugin(currentlySelectedPlugin);
+		this.ExecutionPanel.removeAll();
+		int index = this.PluginList.getSelectedIndex();
+		if(index >= 0) {
+			this.pluginRunner.swapRunningPlugin(this.pluginLoader.getLoadPlugins().get(index), this.ExecutionPanel, this.StatusArea);
+		} else {
+			this.StatusArea.append("No plugin selected to load, you dingus!");
+		}
 	}
 
 	public void switchDir(String s) {
@@ -164,7 +199,6 @@ public class FrameworkWindow extends JFrame implements FrameworkGUI,
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
 
 			JFileChooser chooser = new JFileChooser();
 			chooser.setCurrentDirectory(new java.io.File(pluginLoader.getDir()));

@@ -14,9 +14,13 @@ public class PluginPlatform {
 					
 					// Sets the plugin loader for this GUI.
 					PluginLoader p = new PluginLoader();
-
-					FrameworkWindow frame = new FrameworkWindow(p);
+					PluginRunner runner = new PluginRunner();
+					FrameworkWindow frame = new FrameworkWindow();
+					p.setGUI(frame);
+					frame.setPluginLoader(p);
+					frame.setPluginRunner(runner);
 					frame.setVisible(true);
+					p.reload();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
